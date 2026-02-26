@@ -182,6 +182,48 @@ jobs:
             jq -n --arg v "$RELEASE_TAG" '{versions: [$v]}' > "${INDEX_FILE}"
           fi
 
+      - name: Prune Old Firmware Versions
+        run: |
+          set -euo pipefail
+          
+          FIRMWARE_DIR="$GITHUB_WORKSPACE/docs/firmware"
+          INDEX_FILE="$GITHUB_WORKSPACE/docs/manifest-index.json"
+          
+          # Skip if no firmware directory exists
+          if [ ! -d "${FIRMWARE_DIR}" ]; then
+            echo "No firmware directory exists, skipping prune"
+            exit 0
+          fi
+          
+          # Get all version directories, sorted by modification time (newest first)
+          mapfile -t versions < <(ls -t --directory "${FIRMWARE_DIR}"/*/ 2>/dev/null | sed 's:/*$::' || true)
+          
+          if [ ${#versions[@]} -le 3 ]; then
+            echo "Found ${#versions[@]} versions, no pruning needed"
+            exit 0
+          fi
+          
+          # Keep only the newest 3
+          keep=("${versions[@]:0:3}")
+          delete=("${versions[@]:3}")
+          
+          echo "Keeping ${#keep[@]} newest versions:"
+          for v in "${keep[@]}"; do echo "  - $(basename "$v")"; done
+          
+          echo "Deleting ${#delete[@]} old versions:"
+          for v in "${delete[@]}"; do
+            echo "  - $(basename "$v")"
+            rm -rf "$v"
+          done
+          
+          # Rebuild manifest-index.json from actual firmware directories (sorted by newest first)
+          if [ -f "${INDEX_FILE}" ]; then
+            ls -1t "${FIRMWARE_DIR}" | jq -R . | jq -s . > "${INDEX_FILE}.tmp"
+            mv "${INDEX_FILE}.tmp" "${INDEX_FILE}"
+          fi
+          
+          echo "Pruning complete"
+
       - name: Write the Deploy Info Scroll
         run: |
           set -euo pipefail
