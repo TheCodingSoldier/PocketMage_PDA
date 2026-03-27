@@ -225,7 +225,7 @@ void setupSD() {
   } else {
     ESP_LOGW(TAG, "NVS read failed; using default SD settings");
   }
-  Serial.print("SD_SPI_CMPT" + String(SD_SPI_COMPATIBILITY));
+  Serial.print("SD_SPI_CMPT: " + String(SD_SPI_COMPATIBILITY));
   delay(100);
 
   if (!SD_SPI_COMPATIBILITY) {
