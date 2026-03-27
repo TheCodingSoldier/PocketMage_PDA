@@ -216,10 +216,15 @@ void setupSD() {
 
   // ---------- SDMMC mode ----------
   // Load compatibility mode
-  prefs.begin("PocketMage", true);
-  SD_SPI_COMPATIBILITY = prefs.getBool("SD_SPI_CMPT", false);
-  ALLOW_NO_MICROSD = prefs.getBool("ALLOW_NO_SD", true);
-  prefs.end();
+  SD_SPI_COMPATIBILITY = false;
+  ALLOW_NO_MICROSD = true;
+  if (prefs.begin("PocketMage", true)) {
+    SD_SPI_COMPATIBILITY = prefs.getBool("SD_SPI_CMPT", false);
+    ALLOW_NO_MICROSD = prefs.getBool("ALLOW_NO_SD", true);
+    prefs.end();
+  } else {
+    ESP_LOGW(TAG, "NVS read failed; using default SD settings");
+  }
   Serial.print("SD_SPI_CMPT" + String(SD_SPI_COMPATIBILITY));
   delay(100);
 
@@ -262,9 +267,12 @@ void setupSD() {
           OLED().oledWord("SD Not Detected! [START_FAIL]", false, false);
           delay(3000);
           OLED().oledWord("Entering Compatibility Mode", false, false);
-          prefs.begin("PocketMage", false);
-          prefs.putBool("SD_SPI_CMPT", true);
-          prefs.end();
+          if (prefs.begin("PocketMage", false)) {
+            prefs.putBool("SD_SPI_CMPT", true);
+            prefs.end();
+          } else {
+            ESP_LOGW(TAG, "NVS write failed; cannot persist SD compatibility mode");
+          }
           delay(3000);
           esp_restart();
         }
@@ -285,9 +293,12 @@ void setupSD() {
         }
     }
 
-    prefs.begin("PocketMage", false);
-    prefs.putBool("SD_SPI_CMPT", false);
-    prefs.end();
+    if (prefs.begin("PocketMage", false)) {
+      prefs.putBool("SD_SPI_CMPT", false);
+      prefs.end();
+    } else {
+      ESP_LOGW(TAG, "NVS write failed; cannot persist SD native mode");
+    }
 
     // ---------- Filesystem setup ----------
     const char* dirs[] = {"/sys", "/notes", "/journal", "/dict", "/apps",
@@ -337,9 +348,12 @@ void setupSD() {
               return;
           } else {
               OLED().oledWord("Compatibility Mode Failed. Retrying...", false, false);
-              prefs.begin("PocketMage", false);
-              prefs.putBool("SD_SPI_CMPT", false);
-              prefs.end();
+              if (prefs.begin("PocketMage", false)) {
+                prefs.putBool("SD_SPI_CMPT", false);
+                prefs.end();
+              } else {
+                ESP_LOGW(TAG, "NVS write failed; cannot reset SD compatibility mode");
+              }
               delay(2000);
               OLED().setPowerSave(1);
               BZ().playJingle(Jingles::Shutdown);
