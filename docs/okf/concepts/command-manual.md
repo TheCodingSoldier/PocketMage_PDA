@@ -7,7 +7,7 @@ path: /command-manual/
 updated: 2026-08-18
 okf:
   generated_by: "@docmd/plugin-okf"
-  generated_at: "2026-08-18T00:59:54.642Z"
+  generated_at: "2026-08-18T01:19:35.480Z"
 ---
 ---
 title: "PocketMage Command Manual"

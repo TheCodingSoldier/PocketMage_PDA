@@ -7,7 +7,7 @@ path: /scripting/fullPotionCommandList/
 updated: 2026-08-18
 okf:
   generated_by: "@docmd/plugin-okf"
-  generated_at: "2026-08-18T00:59:54.650Z"
+  generated_at: "2026-08-18T01:19:35.489Z"
 ---
 ---
 title: "PocketMage Scripting Reference"
