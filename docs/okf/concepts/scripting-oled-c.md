@@ -7,7 +7,7 @@ path: /scripting/oled-c/
 updated: 2026-08-18
 okf:
   generated_by: "@docmd/plugin-okf"
-  generated_at: "2026-08-18T01:19:35.491Z"
+  generated_at: "2026-08-18T01:35:03.406Z"
 ---
 ---
 title: "Scripting Example: OLED Drawing"

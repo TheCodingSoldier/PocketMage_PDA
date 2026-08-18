@@ -7,7 +7,7 @@ path: /faq/
 updated: 2026-08-18
 okf:
   generated_by: "@docmd/plugin-okf"
-  generated_at: "2026-08-18T01:19:35.482Z"
+  generated_at: "2026-08-18T01:35:03.395Z"
 ---
 ---
 title: "PocketMage FAQ"
